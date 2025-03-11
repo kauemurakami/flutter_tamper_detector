@@ -1,61 +1,58 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_tamper_detector/flutter_tamper_detector.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  // ignore: library_private_types_in_public_api
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _flutterTamperDetectorPlugin = FlutterTamperDetector();
+  bool isEmulator = false;
+  bool isRooted = false;
+  bool isHooked = false;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    _checkDeviceStatus();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _flutterTamperDetectorPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+  // Função para checar o status do dispositivo usando seu package
+  void _checkDeviceStatus() async {
+    bool emulator = await FlutterTamperDetector.isEmulator();
+    bool rooted = await FlutterTamperDetector.isRooted();
+    bool hooked = await FlutterTamperDetector.isHooked();
 
     setState(() {
-      _platformVersion = platformVersion;
+      isEmulator = emulator;
+      isRooted = rooted;
+      isHooked = hooked;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        appBar: AppBar(title: Text('Flutter Tamper Detector Example')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Is Emulator: $isEmulator'),
+              Text('Is Rooted: $isRooted'),
+              Text('Is Hooked: $isHooked'),
+            ],
+          ),
         ),
       ),
     );
