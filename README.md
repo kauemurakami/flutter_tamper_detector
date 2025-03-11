@@ -1,15 +1,50 @@
+[![Star on GitHub](https://img.shields.io/github/stars/kauemurakami/flutter_tamper_detector.svg?style=flat&logo=github&colorB=deeppink&label=stars)](https://github.com/kauemurakami/flutter_tamper_detector)
 # flutter_tamper_detector
 
-A new Flutter plugin project.
+flutter_tamper_detector is a Flutter security plugin designed to detect and prevent application tampering. It checks if the device is rooted, if tools like Frida, Xposed, or Cydia Substrate are being used, or if the app is running on an emulator. With this information, you can implement security measures in your Flutter app, such as terminating the application or blocking execution.
 
 ## Getting Started
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/to/develop-plugins),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+```
+$ flutter pub add flutter_tamper_detector
+```
+or add in your dependencies
+```
+dependencies:
+  flutter_tamper_detector: <latest>
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Usage
 
+Simple and easy to use!<br/>
+
+```dart
+import 'package:flutter_tamper_detector/flutter_tamper_detector.dart';
+```
+Now just use the functions directly with our main class `FlutterTamperDetector`:<br/>
+
+```dart
+bool isEmulator = await FlutterTamperDetector.isEmulator();
+bool isRooted   = await FlutterTamperDetector.isRooted();
+bool isHooked   = await FlutterTamperDetector.isHooked();
+```
+Then you can make some decision in your app according to your needs, for example, exit the app if it is running on a rooted device.<br/>
+```dart
+ Future<void> checkIfRootedAndExit() async {
+    bool isRooted = await FlutterTamperDetector.isRooted();
+
+    if (isRooted) {
+      print('Device is rooted, exiting the app...');
+      exit(0);
+    } else {
+      print('Device is not rooted.');
+    }
+  }
+```
+See more details in the example section<br/>
+
+## How test
+ 1 - Run on a emulator<br/>
+ 2 - Run on a device rooted (ex with [magisk](https://github.com/topjohnwu/Magisk))<br/>
+ 3 - Run on a device that has frida on it, for example, you can test this by following the [official frida documentation](https://frida.re/docs/android/), after completing the steps described there, run the application.<br/>
+ Don't worry, after that you will be able to remove Frida from your device.<br/>
