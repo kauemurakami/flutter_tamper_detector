@@ -21,22 +21,19 @@ class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
-            // Verifica se o dispositivo está rooteado
             "isRooted" -> {
-                val isRooted = RootChecker.isDeviceRooted() // Chama a função que verifica o root
-                result.success(isRooted) // Retorna true ou false para o Flutter
+                val isRooted = RootChecker.isDeviceRooted() root
+                result.success(isRooted)
             }
-            // Verifica se o dispositivo está hookeado
             "isHooked" -> {
                 val hooked = HookDetector.check()
                 result.success(hooked)
             }
-            // Verifica se o dispositivo é um emulador
             "isEmulator" -> {
                 val isEmulator = IsEmulator.check()
                 result.success(isEmulator)
             }
-            else -> result.notImplemented() // Caso o método não seja implementado
+            else -> result.notImplemented()
         }
     }
 

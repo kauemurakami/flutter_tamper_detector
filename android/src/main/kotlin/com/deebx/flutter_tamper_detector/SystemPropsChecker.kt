@@ -3,11 +3,11 @@ package com.deebx.flutter_tamper_detector
 object SystemPropsChecker {
     fun checkSystemProps(): Boolean {
         val properties = arrayOf(
-            "ro.build.tags",        // "test-keys" indica root
-            "ro.debuggable",        // "1" indica root
-            "ro.secure",            // "0" indica root
-            "ro.bootmode",          // "recovery" ou "fastboot" pode indicar root
-            "ro.boot.verifiedbootstate" // "orange" ou "yellow" indica root
+            "ro.build.tags",        // "test-keys" root
+            "ro.debuggable",        // "1"  root
+            "ro.secure",            // "0"  root
+            "ro.bootmode",          // "recovery" or "fastboot" can indicate root
+            "ro.boot.verifiedbootstate" // "orange" or "yellow" indicate root
         )
 
         for (prop in properties) {
