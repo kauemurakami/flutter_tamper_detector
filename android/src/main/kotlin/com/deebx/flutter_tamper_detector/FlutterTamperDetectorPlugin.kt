@@ -1,10 +1,12 @@
 package com.deebx.flutter_tamper_detector
 
+import android.app.Activity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import kotlin.system.exitProcess
 
 /** FlutterTamperDetectorPlugin */
 class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
@@ -22,21 +24,30 @@ class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "isRooted" -> {
-                val isRooted = RootChecker.isDeviceRooted() root
+                val isRooted = RootChecker.isDeviceRooted()
+                handleExitCondition(call, isRooted)
                 result.success(isRooted)
             }
             "isHooked" -> {
-                val hooked = HookDetector.check()
-                result.success(hooked)
+                val isHooked = HookDetector.check()
+                handleExitCondition(call, isHooked)
+                result.success(isHooked)
             }
             "isEmulator" -> {
                 val isEmulator = IsEmulator.check()
+                handleExitCondition(call, isEmulator)
                 result.success(isEmulator)
             }
             else -> result.notImplemented()
         }
     }
+ private fun handleExitCondition(call: MethodCall, shouldExit: Boolean) {
+    val exitProcessIfTrue = call.argument<Boolean>("exitProcessIfTrue") ?: false
 
+    if (exitProcessIfTrue && shouldExit) {
+        exitProcess(0)
+    }
+}
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
   }

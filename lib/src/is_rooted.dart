@@ -21,9 +21,19 @@ class IsRooted {
   /// Returns `true` if the device is rooted, otherwise `false`.
   ///
   /// If an error occurs while checking, it catches the exception and returns `false`.
-  static Future<bool> check() async {
+  ///
+  /// The [exitProcessIfTrue] parameter, which is `false` by default, determines whether the app should terminate the process
+  /// if the device is rooted. If set to `true`, the app will attempt to terminate the process on the native side, potentially
+  /// using methods like `exitProcess(0)` depending on the implementation in Kotlin/Java.
+  ///
+  /// [exitProcessIfTrue] helps enforce stricter security measures when detecting rooted devices, allowing the app to exit
+  /// automatically in case of tampering.
+  ///
+  /// If the [exitProcessIfTrue] flag is set to `true`, it will be passed to the native code to trigger an exit condition.
+  /// If the check fails, the method returns `false`.
+  static Future<bool> check({bool exitProcessIfTrue = false}) async {
     try {
-      return await _channel.invokeMethod('isRooted') ?? false;
+      return await _channel.invokeMethod('isRooted', {'exitProcessIfTrue': exitProcessIfTrue}) ?? false;
     } on PlatformException catch (e) {
       print("Failed to check root status: '${e.message}'.");
       return false;
