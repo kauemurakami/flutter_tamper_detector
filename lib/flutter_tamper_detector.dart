@@ -22,15 +22,21 @@ class FlutterTamperDetector {
   /// Checks if the app is running on an emulator.
   ///
   /// Returns `true` if the device is an emulator, otherwise `false`.
-  static Future<bool> isEmulator() => IsEmulator.check();
+  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if an emulator is detected.
+  static Future<bool> isEmulator({bool exitProcessIfTrue = false}) =>
+      IsEmulator.check(exitProcessIfTrue: exitProcessIfTrue);
 
   /// Checks if the device is rooted.
   ///
   /// Returns `true` if the device has root access, otherwise `false`.
-  static Future<bool> isRooted() => IsRooted.check();
+  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if the device is rooted.
+  static Future<bool> isRooted({bool exitProcessIfTrue = false}) =>
+      IsRooted.check(exitProcessIfTrue: exitProcessIfTrue);
 
   /// Checks if the app is being hooked by a tool like Frida, Xposed, or Cydia Substrate.
   ///
   /// Returns `true` if any hooking framework is detected, otherwise `false`.
-  static Future<bool> isHooked() => IsHooked.check();
+  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if hooking is detected.
+  static Future<bool> isHooked({bool exitProcessIfTrue = false}) =>
+      IsHooked.check(exitProcessIfTrue: exitProcessIfTrue);
 }
