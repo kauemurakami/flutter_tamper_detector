@@ -28,18 +28,25 @@ bool isEmulator = await FlutterTamperDetector.isEmulator();
 bool isRooted   = await FlutterTamperDetector.isRooted();
 bool isHooked   = await FlutterTamperDetector.isHooked();
 ```
-Then you can make some decision in your app according to your needs, for example, exit the app if it is running on a rooted device.<br/>
+Then you can make some decision in your app according to your needs, for example, the app if it is running on a rooted device.<br/>
 ```dart
- Future<void> checkIfRootedAndExit() async {
+ Future<void> checkIfRooted() async {
     bool isRooted = await FlutterTamperDetector.isRooted();
 
     if (isRooted) {
       print('Device is rooted, exiting the app...');
-      exit(0);
+      // TODO: your logic here
     } else {
       print('Device is not rooted.');
     }
   }
+```
+Or, if you want to automatically terminate the app process when any of the functions are true, you can use the `exitProcessIfTrue: true` parameter.<br>
+This way, the application will terminate the process immediately without the need for a decision structure in your Flutter code.<br>
+```dart
+bool isEmulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true);
+bool isRooted   = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
+bool isHooked   = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
 ```
 See more details in the example section<br/>
 

@@ -24,11 +24,18 @@ class _MyAppState extends State<MyApp> {
     _checkDeviceStatus();
   }
 
-  // Função para checar o status do dispositivo usando seu package
+  // Function to check device status
   void _checkDeviceStatus() async {
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
+
+    /*If you want the package to automatically terminate the application process,
+    test with our `exitProcessIfTrue:true` parameter.
+    bool emulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true);
+    bool rooted = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
+    bool hooked = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
+    */
 
     setState(() {
       isEmulator = emulator;
