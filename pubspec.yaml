@@ -1,6 +1,6 @@
 name: flutter_tamper_detector
 description: "flutter_tamper_detector is a Flutter security plugin that detects rooting, hooking tools like Frida and Xposed, or emulators, allowing you to block execution or exit the app."
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/kauemurakami/flutter_tamper_detector
 repository: https://github.com/kauemurakami/flutter_tamper_detector
 issue_tracker: https://github.com/kauemurakami/flutter_tamper_detector/issues
