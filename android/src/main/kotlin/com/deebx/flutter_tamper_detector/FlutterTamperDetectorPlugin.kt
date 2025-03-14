@@ -1,5 +1,6 @@
 package com.deebx.flutter_tamper_detector
 
+import android.content.Context
 import android.app.Activity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -15,10 +16,12 @@ class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
+  private lateinit var context: Context
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tamper_detector")
     channel.setMethodCallHandler(this)
+     context = flutterPluginBinding.applicationContext
   }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -37,6 +40,11 @@ class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
                 val isEmulator = IsEmulator.check()
                 handleExitCondition(call, isEmulator)
                 result.success(isEmulator)
+            }
+            "isDebug" -> {
+                val isDebug = IsDebug.check(context)
+                handleExitCondition(call, isDebug)
+                result.success(isDebug)
             }
             else -> result.notImplemented()
         }

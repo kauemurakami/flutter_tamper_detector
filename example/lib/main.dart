@@ -17,6 +17,7 @@ class _MyAppState extends State<MyApp> {
   bool isEmulator = false;
   bool isRooted = false;
   bool isHooked = false;
+  bool isDebug = false;
 
   @override
   void initState() {
@@ -29,18 +30,21 @@ class _MyAppState extends State<MyApp> {
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
+    bool debug = await FlutterTamperDetector.isDebug();
 
     /*If you want the package to automatically terminate the application process,
     test with our `exitProcessIfTrue:true` parameter.
     bool emulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true);
     bool rooted = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
     bool hooked = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
+    bool debug = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
     */
 
     setState(() {
       isEmulator = emulator;
       isRooted = rooted;
       isHooked = hooked;
+      isDebug = debug;
     });
   }
 
@@ -55,9 +59,10 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Is Emulator: $isEmulator'),
-              Text('Is Rooted: $isRooted'),
+              Text('Is Debug: $isDebug'),
               Text('Is Hooked: $isHooked'),
+              Text('Is Rooted: $isRooted'),
+              Text('Is Emulator: $isEmulator'),
             ],
           ),
         ),

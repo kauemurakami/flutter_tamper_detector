@@ -27,6 +27,8 @@ Now just use the functions directly with our main class `FlutterTamperDetector`:
 bool isEmulator = await FlutterTamperDetector.isEmulator();
 bool isRooted   = await FlutterTamperDetector.isRooted();
 bool isHooked   = await FlutterTamperDetector.isHooked();
+bool isDebug    = await FlutterTamperDetector.isDebug();
+
 ```
 Then you can make some decision in your app according to your needs, for example, the app if it is running on a rooted device.<br/>
 ```dart
@@ -47,6 +49,7 @@ This way, the application will terminate the process immediately without the nee
 bool isEmulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true);
 bool isRooted   = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
 bool isHooked   = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
+bool isDebug   = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
 ```
 See more details in [`/example`](https://github.com/kauemurakami/flutter_tamper_detector/tree/main/example)<br/>
 

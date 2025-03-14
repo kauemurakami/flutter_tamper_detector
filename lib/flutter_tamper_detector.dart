@@ -1,6 +1,7 @@
 import './src/is_emulator.dart';
 import './src/is_rooted.dart';
 import './src/is_hooked.dart';
+import './src/is_debug.dart';
 
 /// A security utility for detecting potential tampering with the Flutter application.
 ///
@@ -39,4 +40,11 @@ class FlutterTamperDetector {
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if hooking is detected.
   static Future<bool> isHooked({bool exitProcessIfTrue = false}) =>
       IsHooked.check(exitProcessIfTrue: exitProcessIfTrue);
+
+  /// Checks if the app is running in debug mode.
+  ///
+  /// Returns `true` if the app is running in debug mode, otherwise `false`.
+  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if running in debug mode.
+  static Future<bool> isDebug({bool exitProcessIfTrue = false}) =>
+      IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
 }

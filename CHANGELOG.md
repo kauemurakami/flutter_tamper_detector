@@ -1,3 +1,10 @@
+## 0.2.0
+* Implemented `isDebug` method to detect if the app is running in debug mode.
+* **New Method**: `FlutterTamperDetector.isDebug()`
+* Returns `true` if the app is in debug mode, otherwise returns `false`.
+* Utilizes native code in Kotlin to check the app's `ApplicationInfo.FLAG_DEBUGGABLE` flag.
+* Optional parameter `exitProcessIfTrue` if `true` finish app process immediately.
+
 ## 0.1.4 
 * Added instructions in **README.md** for properly configuring ProGuard/R8.  
 * Updated the **example app (`example/`)** to include information about ProGuard.  
