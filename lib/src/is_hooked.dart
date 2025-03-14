@@ -14,7 +14,9 @@ import 'package:flutter/services.dart';
 /// ```
 class IsHooked {
   /// The method channel used for communicating with the native platform.
-  static const MethodChannel _channel = MethodChannel('flutter_tamper_detector');
+  static const MethodChannel _channel = MethodChannel(
+    'flutter_tamper_detector',
+  );
 
   /// Checks whether the app is being hooked by malicious tools.
   ///
@@ -33,7 +35,10 @@ class IsHooked {
   /// If the check fails, the method returns `false`.
   static Future<bool> check({bool exitProcessIfTrue = false}) async {
     try {
-      return await _channel.invokeMethod('isHooked', {'exitProcessIfTrue': exitProcessIfTrue}) ?? false;
+      return await _channel.invokeMethod('isHooked', {
+            'exitProcessIfTrue': exitProcessIfTrue,
+          }) ??
+          false;
     } on PlatformException catch (e) {
       print("Failed to check hooked: '${e.message}'.");
       return false;

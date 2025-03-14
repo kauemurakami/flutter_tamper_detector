@@ -14,7 +14,9 @@ import 'package:flutter/services.dart';
 /// ```
 class IsRooted {
   /// The method channel used for communicating with the native platform.
-  static const MethodChannel _channel = MethodChannel('flutter_tamper_detector');
+  static const MethodChannel _channel = MethodChannel(
+    'flutter_tamper_detector',
+  );
 
   /// Checks whether the device is rooted.
   ///
@@ -33,7 +35,10 @@ class IsRooted {
   /// If the check fails, the method returns `false`.
   static Future<bool> check({bool exitProcessIfTrue = false}) async {
     try {
-      return await _channel.invokeMethod('isRooted', {'exitProcessIfTrue': exitProcessIfTrue}) ?? false;
+      return await _channel.invokeMethod('isRooted', {
+            'exitProcessIfTrue': exitProcessIfTrue,
+          }) ??
+          false;
     } on PlatformException catch (e) {
       print("Failed to check root status: '${e.message}'.");
       return false;

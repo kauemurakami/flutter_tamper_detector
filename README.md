@@ -52,7 +52,7 @@ See more details in the example section<br/>
 
 ## Use native
 If you want to stop the process before even entering the Flutter engine, I will provide an example using the same classes here in the package for you to implement directly in the `onCreate` of our `MainActivity.kt`, this way we close the application and end the process before even entering the Flutter engine. Suggestion received via Linkedin from: *Adrian Kohls*<br>
-Acesse -> [native_tamper_detector](https://github.com/kauemurakami/native_tamper_detector)
+Access -> [native_tamper_detector](https://github.com/kauemurakami/native_tamper_detector)
 
 
 ## How test
