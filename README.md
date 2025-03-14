@@ -34,7 +34,7 @@ Then you can make some decision in your app according to your needs, for example
     bool isRooted = await FlutterTamperDetector.isRooted();
 
     if (isRooted) {
-      print('Device is rooted, exiting the app...');
+      print('Device is rooted...');
       // TODO: your logic here
     } else {
       print('Device is not rooted.');
