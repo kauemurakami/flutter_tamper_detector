@@ -48,12 +48,23 @@ bool isEmulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true
 bool isRooted   = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
 bool isHooked   = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
 ```
-See more details in the example section<br/>
+See more details in [`/example`](https://github.com/kauemurakami/flutter_tamper_detector/tree/main/example)<br/>
 
 ## Use native
 If you want to stop the process before even entering the Flutter engine, I will provide an example using the same classes here in the package for you to implement directly in the `onCreate` of our `MainActivity.kt`, this way we close the application and end the process before even entering the Flutter engine. Suggestion received via Linkedin from: *Adrian Kohls*<br>
 Access -> [native_tamper_detector](https://github.com/kauemurakami/native_tamper_detector)
 
+## ProGuard/R8
+If your Flutter app is configured to use ProGuard or R8 (code minification enabled), some flutter_tamper_detector classes may be obfuscated or removed.<br/>
+To avoid this, add the following rules to your proguard-rules.pro file (located in `android/app/proguard-rules.pro` in your project):<br/>
+```proguard
+# Keeps all classes from the native package
+-keep class com.deebx.flutter_tamper_detector.** { *; }
+
+# Prevents class names from being changed
+-keepnames class com.deebx.flutter_tamper_detector.**
+```
+See more details in [`/example`](https://github.com/kauemurakami/flutter_tamper_detector/tree/main/example).
 
 ## How test
  1 - Run on a emulator<br/>
