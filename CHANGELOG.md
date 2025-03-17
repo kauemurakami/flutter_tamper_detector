@@ -1,3 +1,7 @@
+## 0.2.1
+* Added more verifications for Magisk
+* This not affect the current implementation
+
 ## 0.2.0
 * Implemented `isDebug` method to detect if the app is running in debug mode.
 * **New Method**: `FlutterTamperDetector.isDebug()`
