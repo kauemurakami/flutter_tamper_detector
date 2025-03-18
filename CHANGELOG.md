@@ -1,3 +1,7 @@
+## 0.3.1
+* Fix format to pub points
+* This not affect current implamentations
+
 ## 0.3.0
 * Added new param in `isRooted` and `isHooked` `uninstallIfTrue`, in these two cases, because we use the attacker's own root to uninstall our app.
 * Added new functions to uninstall app if device is root or contains hooks.
