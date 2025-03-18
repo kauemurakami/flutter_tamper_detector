@@ -31,20 +31,19 @@ class FlutterTamperDetector {
   ///
   /// Returns `true` if the device has root access, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if the device is rooted.
-  static Future<bool> isRooted({bool exitProcessIfTrue = false}) =>
-      IsRooted.check(exitProcessIfTrue: exitProcessIfTrue);
+  static Future<bool> isRooted({bool exitProcessIfTrue = false, bool uninstallIfTrue = false}) =>
+      IsRooted.check(exitProcessIfTrue: exitProcessIfTrue, uninstallIfTrue: uninstallIfTrue);
 
   /// Checks if the app is being hooked by a tool like Frida, Xposed, or Cydia Substrate.
   ///
   /// Returns `true` if any hooking framework is detected, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if hooking is detected.
-  static Future<bool> isHooked({bool exitProcessIfTrue = false}) =>
-      IsHooked.check(exitProcessIfTrue: exitProcessIfTrue);
+  static Future<bool> isHooked({bool exitProcessIfTrue = false, bool uninstallIfTrue = false}) =>
+      IsHooked.check(exitProcessIfTrue: exitProcessIfTrue, uninstallIfTrue: uninstallIfTrue);
 
   /// Checks if the app is running in debug mode.
   ///
   /// Returns `true` if the app is running in debug mode, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if running in debug mode.
-  static Future<bool> isDebug({bool exitProcessIfTrue = false}) =>
-      IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
+  static Future<bool> isDebug({bool exitProcessIfTrue = false}) => IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
 }

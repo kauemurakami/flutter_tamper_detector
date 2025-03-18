@@ -1,3 +1,8 @@
+## 0.3.0
+* Added new param in `isRooted` and `isHooked` `uninstallIfTrue`, in these two cases, because we use the attacker's own root to uninstall our app.
+* Added new functions to uninstall app if device is root or contains hooks.
+* This feature can only be tested on rooted devices, because we use root against it by uninstalling the app with special root permissions.
+
 ## 0.2.1
 * Added more verifications for Magisk
 * This not affect the current implementation

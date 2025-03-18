@@ -36,7 +36,11 @@ class _MyAppState extends State<MyApp> {
     test with our `exitProcessIfTrue:true` parameter.
     bool emulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true);
     bool rooted = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
+    or
+    bool rooted = await FlutterTamperDetector.isRooted(uninstallIfTrue: true);
     bool hooked = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
+    or
+    bool hooked = await FlutterTamperDetector.isHooked(uninstallIfTrue: true);
     bool debug = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
     */
 

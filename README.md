@@ -51,6 +51,12 @@ bool isRooted   = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
 bool isHooked   = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
 bool isDebug    = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
 ```
+We also have a new parameter for the `isRooted` and `isHooked` functions `uninstallIfTrue` that can be passed to use the "attacking" phone's own root to uninstall the app with administrator permissions automatically. (This can only be tested on rooted devices)<br/>
+```dart
+bool isRooted   = await FlutterTamperDetector.isRooted(uninstallIfTrue: true);
+bool isHooked   = await FlutterTamperDetector.isHooked(uninstallIfTrue: true);
+```
+If you use both parameters as true, the uninstallation process is called first, if you just want to exit the app just use `exitProcessIfTrue`<br/>
 See more details in [`/example`](https://github.com/kauemurakami/flutter_tamper_detector/tree/main/example)<br/>
 
 ## Use native
