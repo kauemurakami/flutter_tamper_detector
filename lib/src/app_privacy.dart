@@ -7,7 +7,9 @@ import 'package:flutter/services.dart';
 /// a method channel.
 class AppSettingsSecurity {
   /// The method channel used for communicating with the native platform.
-  static const MethodChannel _channel = MethodChannel('flutter_tamper_detector');
+  static const MethodChannel _channel = MethodChannel(
+    'flutter_tamper_detector',
+  );
 
   /// Configures the app's security settings.
   ///
@@ -21,7 +23,10 @@ class AppSettingsSecurity {
   /// If set to `true`, the app will be hidden from the recent apps menu by enabling the `FLAG_FULLSCREEN` flag.
   /// If set to `false`, the app will appear in the recent apps menu.
   ///
-  static Future<bool> appSecuritySettings({bool preventScreenshot = true, bool hideInMenu = true}) async {
+  static Future<bool> appSecuritySettings({
+    bool preventScreenshot = true,
+    bool hideInMenu = true,
+  }) async {
     try {
       final bool result =
           await _channel.invokeMethod('setAppPrivacy', {

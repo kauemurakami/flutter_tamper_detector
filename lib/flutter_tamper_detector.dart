@@ -38,8 +38,13 @@ class FlutterTamperDetector {
   /// If set to `true`, the app will prevent screenshots and screen recording by enabling the `FLAG_SECURE` flag.
   /// If set to `false`, screenshots and screen recording will be allowed.
   ///
-  static Future<bool> appSecuritySettings({hideInMenu = true, preventScreenshot = true}) async =>
-      await AppSettingsSecurity.appSecuritySettings(hideInMenu: hideInMenu, preventScreenshot: preventScreenshot);
+  static Future<bool> appSecuritySettings({
+    hideInMenu = true,
+    preventScreenshot = true,
+  }) async => await AppSettingsSecurity.appSecuritySettings(
+    hideInMenu: hideInMenu,
+    preventScreenshot: preventScreenshot,
+  );
 
   /// Checks if the app is running on an emulator.
   ///
@@ -52,26 +57,38 @@ class FlutterTamperDetector {
   ///
   /// Returns `true` if the device has root access, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if the device is rooted.
-  static Future<bool> isRooted({bool exitProcessIfTrue = false, bool uninstallIfTrue = false}) =>
-      IsRooted.check(exitProcessIfTrue: exitProcessIfTrue, uninstallIfTrue: uninstallIfTrue);
+  static Future<bool> isRooted({
+    bool exitProcessIfTrue = false,
+    bool uninstallIfTrue = false,
+  }) => IsRooted.check(
+    exitProcessIfTrue: exitProcessIfTrue,
+    uninstallIfTrue: uninstallIfTrue,
+  );
 
   /// Checks if the app is being hooked by a tool like Frida, Xposed, or Cydia Substrate.
   ///
   /// Returns `true` if any hooking framework is detected, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if hooking is detected.
-  static Future<bool> isHooked({bool exitProcessIfTrue = false, bool uninstallIfTrue = false}) =>
-      IsHooked.check(exitProcessIfTrue: exitProcessIfTrue, uninstallIfTrue: uninstallIfTrue);
+  static Future<bool> isHooked({
+    bool exitProcessIfTrue = false,
+    bool uninstallIfTrue = false,
+  }) => IsHooked.check(
+    exitProcessIfTrue: exitProcessIfTrue,
+    uninstallIfTrue: uninstallIfTrue,
+  );
 
   /// Checks if the app is running in debug mode.
   ///
   /// Returns `true` if the app is running in debug mode, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if running in debug mode.
-  static Future<bool> isDebug({bool exitProcessIfTrue = false}) => IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
+  static Future<bool> isDebug({bool exitProcessIfTrue = false}) =>
+      IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
 
   /// Checks if the app was installed from the Play Store.
   ///
   /// Returns `true` if the app was installed from the Play Store, otherwise `false`.
   /// Optionally, if [exitProcessIfFalse] is set to `true`, the app will attempt to terminate the process if it was not installed from the Play Store.
-  static Future<bool> isInstalledFromPlaystore({bool exitProcessIfFalse = false}) =>
-      IsInstalledFromPlaystore.check(exitProcessIfFalse: exitProcessIfFalse);
+  static Future<bool> isInstalledFromPlaystore({
+    bool exitProcessIfFalse = false,
+  }) => IsInstalledFromPlaystore.check(exitProcessIfFalse: exitProcessIfFalse);
 }
