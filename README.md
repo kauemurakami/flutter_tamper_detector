@@ -28,7 +28,7 @@ bool isEmulator = await FlutterTamperDetector.isEmulator();
 bool isRooted   = await FlutterTamperDetector.isRooted();
 bool isHooked   = await FlutterTamperDetector.isHooked();
 bool isDebug    = await FlutterTamperDetector.isDebug();
-
+bool installedFromPlayStore = await FlutterTamperDetector.isInstalledFromPlaystore();
 ```
 Then you can make some decision in your app according to your needs, for example, the app if it is running on a rooted device.<br/>
 ```dart
@@ -44,12 +44,14 @@ Then you can make some decision in your app according to your needs, for example
   }
 ```
 Or, if you want to automatically terminate the app process when any of the functions are true, you can use the `exitProcessIfTrue: true` parameter.<br>
-This way, the application will terminate the process immediately without the need for a decision structure in your Flutter code.<br>
+This way, the application will terminate the process immediately without the need for a decision structure in your Flutter code.<br/>
+Only for `isInstalledFromPlaystore` we have a different parameter that is similar to the previous one but this time, we want to take action if the return is false, and not true, so we use `exitProcessIfFalse: true` if the app was not installed directly from the store. (in debug this will always return false)
 ```dart
 bool isEmulator = await FlutterTamperDetector.isEmulator(exitProcessIfTrue: true);
 bool isRooted   = await FlutterTamperDetector.isRooted(exitProcessIfTrue: true);
 bool isHooked   = await FlutterTamperDetector.isHooked(exitProcessIfTrue: true);
 bool isDebug    = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
+bool installedFromPlayStore = await FlutterTamperDetector.isInstalledFromPlaystore(exitProcessIfFalse: true);
 ```
 We also have a new parameter for the `isRooted` and `isHooked` functions `uninstallIfTrue` that can be passed to use the "attacking" phone's own root to uninstall the app with administrator permissions automatically. (This can only be tested on rooted devices)<br/>
 ```dart

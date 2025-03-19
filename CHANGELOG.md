@@ -1,3 +1,7 @@
+## 0.4.0
+* Adding functionality to check if the application was installed from the store (PlayStore)
+* `isInstalledFromPlaystore` with the optional parameter `exitProcessIfFalse`
+
 ## 0.3.1
 * Fix format to pub points
 * This not affect current implamentations
