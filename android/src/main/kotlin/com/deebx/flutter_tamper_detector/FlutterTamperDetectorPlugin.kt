@@ -12,21 +12,45 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import kotlin.system.exitProcess
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
+
+
 
 /** FlutterTamperDetectorPlugin */
-class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
+class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
-  private lateinit var context: Context
+    private lateinit var channel : MethodChannel
+    private lateinit var context: Context
 
-  override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tamper_detector")
-    channel.setMethodCallHandler(this)
-     context = flutterPluginBinding.applicationContext
-  }
+    private var activity: Activity? = null
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity
+    }
+    override fun onDetachedFromActivity() {
+        activity = null
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity
+    }
+
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_tamper_detector")
+        channel.setMethodCallHandler(this)
+        context = flutterPluginBinding.applicationContext
+    }
+
+    
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         val exitProcessIfTrue = call.argument<Boolean>("exitProcessIfTrue") ?: false
@@ -57,6 +81,15 @@ class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
                 val isInstalled = IsInstalledFromPlayStore.check(context)
                 handleExitOrUninstall(!isInstalled, exitProcessIfTrue, false)
                 result.success(isInstalled)
+            }
+           "setAppPrivacy" -> {
+                val preventScreenshot = call.argument<Boolean>("preventScreenshot") ?: false
+                val hideInMenu = call.argument<Boolean>("hideInMenu") ?: false
+                activity?.let {
+                    AppPrivacy.setAppPrivacy(it, preventScreenshot, hideInMenu)
+                }
+                // activity!!.window?.addFlags(LayoutParams.FLAG_SECURE)
+                // activity!!.window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             }
             else -> result.notImplemented()
         }

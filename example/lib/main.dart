@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tamper_detector/flutter_tamper_detector.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MyApp());
 }
 
@@ -28,12 +30,12 @@ class _MyAppState extends State<MyApp> {
 
   // Function to check device status
   void _checkDeviceStatus() async {
+    await FlutterTamperDetector.appSecuritySettings();
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
     bool debug = await FlutterTamperDetector.isDebug();
-    bool installedFromPlayStore =
-        await FlutterTamperDetector.isInstalledFromPlaystore();
+    bool installedFromPlayStore = await FlutterTamperDetector.isInstalledFromPlaystore();
 
     /*If you want the package to automatically terminate the application process,
     test with our `exitProcessIfTrue:true` parameter.
@@ -72,9 +74,7 @@ class _MyAppState extends State<MyApp> {
               Text('Is Hooked: $isHooked'),
               Text('Is Rooted: $isRooted'),
               Text('Is Emulator: $isEmulator'),
-              Text(
-                'Is installed from the play store: $isInstalledFromPlayStore',
-              ),
+              Text('Is installed from the play store: $isInstalledFromPlayStore'),
             ],
           ),
         ),
