@@ -2,6 +2,7 @@ import './src/is_emulator.dart';
 import './src/is_rooted.dart';
 import './src/is_hooked.dart';
 import './src/is_debug.dart';
+import './src/is_installed_from_playstore.dart'; // Adicionei a importação do novo arquivo
 
 /// A security utility for detecting potential tampering with the Flutter application.
 ///
@@ -9,6 +10,8 @@ import './src/is_debug.dart';
 /// - **Rooted**: Detects if the device has root access.
 /// - **Hooked**: Identifies the presence of hooking frameworks like Frida, Xposed, or Cydia Substrate.
 /// - **Running on an Emulator**: Determines if the app is being executed in an emulated environment.
+/// - **Running in Debug mode**: Determines if the app is being executed in a debug mode.
+/// - **Installed from Play Store**: Verifies if the app was installed from the Play Store.
 ///
 /// This allows you to implement security measures, such as preventing execution on compromised devices.
 ///
@@ -57,4 +60,12 @@ class FlutterTamperDetector {
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if running in debug mode.
   static Future<bool> isDebug({bool exitProcessIfTrue = false}) =>
       IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
+
+  /// Checks if the app was installed from the Play Store.
+  ///
+  /// Returns `true` if the app was installed from the Play Store, otherwise `false`.
+  /// Optionally, if [exitProcessIfFalse] is set to `true`, the app will attempt to terminate the process if it was not installed from the Play Store.
+  static Future<bool> isInstalledFromPlaystore({
+    bool exitProcessIfFalse = false,
+  }) => IsInstalledFromPlaystore.check(exitProcessIfFalse: exitProcessIfFalse);
 }

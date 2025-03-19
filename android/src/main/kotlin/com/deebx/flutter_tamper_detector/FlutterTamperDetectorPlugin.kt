@@ -53,6 +53,11 @@ class FlutterTamperDetectorPlugin: FlutterPlugin, MethodCallHandler {
                 handleExitOrUninstall(isDebug, exitProcessIfTrue, false)
                 result.success(isDebug)
             }
+            "isInstalledFromPlayStore" -> {
+                val isInstalled = IsInstalledFromPlayStore.check(context)
+                handleExitOrUninstall(!isInstalled, exitProcessIfTrue, false)
+                result.success(isInstalled)
+            }
             else -> result.notImplemented()
         }
     }
