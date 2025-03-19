@@ -1,3 +1,7 @@
+## 0.5.0
+* Implemented new functionality to enhance app security settings, allowing control over screenshot prevention and hiding the app from the recent apps menu.
+* Added the `appSecuritySettings` method, which uses a native method channel to configure the app’s window
+
 ## 0.4.0
 * Adding functionality to check if the application was installed from the store (PlayStore)
 * `isInstalledFromPlaystore` with the optional parameter `exitProcessIfFalse`

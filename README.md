@@ -61,6 +61,11 @@ bool isHooked   = await FlutterTamperDetector.isHooked(uninstallIfTrue: true);
 If you use both parameters as true, the uninstallation process is called first, if you just want to exit the app just use `exitProcessIfTrue`<br/>
 See more details in [`/example`](https://github.com/kauemurakami/flutter_tamper_detector/tree/main/example)<br/>
 
+Now we also have the functionality to prevent screenshots and not leave the application visible when it is in the app menu (when you minimize it to switch apps for example) resulting in a black screen.<br/>
+```dart
+await FlutterTamperDetector.appSecuritySettings();
+```
+
 ## Use native
 If you want to stop the process before even entering the Flutter engine, I will provide an example using the same classes here in the package for you to implement directly in the `onCreate` of our `MainActivity.kt`, this way we close the application and end the process before even entering the Flutter engine. Suggestion received via Linkedin from: *Adrian Kohls*<br>
 Access -> [native_tamper_detector](https://github.com/kauemurakami/native_tamper_detector)
