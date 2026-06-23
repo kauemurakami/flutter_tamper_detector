@@ -1,5 +1,5 @@
 ## 0.6.0
-
+* build from iOS
 
 ## 0.5.0
 * Implemented new functionality to enhance app security settings, allowing control over screenshot prevention and hiding the app from the recent apps menu.
