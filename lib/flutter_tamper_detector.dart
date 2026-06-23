@@ -46,7 +46,9 @@ class FlutterTamperDetector {
     preventScreenshot: preventScreenshot,
   );
 
-  /// Checks if the app is running on an emulator.
+  /// Checks if the app is running on.
+  /// [android] -> emulator
+  /// [ios] -> simulator
   ///
   /// Returns `true` if the device is an emulator, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if an emulator is detected.
