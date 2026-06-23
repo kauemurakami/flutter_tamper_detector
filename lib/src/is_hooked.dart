@@ -1,55 +1,58 @@
+import 'dart:io';
 import 'package:flutter/services.dart';
 
-/// Utility class to detect if the app is being hooked by tools like Frida, Xposed, or Cydia Substrate.
+/// Verify if:
+/// - In **Android** -> Checks if running processes use a **hook framework** (Frida/Xposed) looking at open ports and memory maps.
+/// - In **iOS** -> Checks if running processes contain **injected dynamic libraries** (via Mach-O dyld image analysis).
 ///
-/// This class communicates with the native platform using `MethodChannel`
-/// to determine whether the application is being tampered with.
+/// **Note:** The only function visible and available to the user in the Dart
+/// layer is [isHooked] (accessed via `IsHooked.check()`), which unifies
+/// the platform-specific hook engine validations under the hood.
 ///
 /// Example usage:
 /// ```dart
 /// bool isHooked = await IsHooked.check();
 /// if (isHooked) {
-///   print("Application is being hooked.");
+///   print("An active hooking framework was detected.");
 /// }
 /// ```
 class IsHooked {
-  /// The method channel used for communicating with the native platform.
+  /// The method channel used for communicating with the native platforms.
   static const MethodChannel _channel = MethodChannel(
     'flutter_tamper_detector',
   );
 
-  /// Checks whether the app is being hooked by malicious tools.
+  /// Checks whether the application is being targeted or altered by runtime hooking engines.
   ///
-  /// Returns `true` if hooking is detected, otherwise `false`.
+  /// Returns `true` if runtime indicators point to external inspection systems (Frida,
+  /// Objection, Xposed, or Cydia Substrate), otherwise returns `false`.
   ///
-  /// If an error occurs while checking, it catches the exception and returns `false`.
+  /// If an unhandled platform exception occurs during communication, the error
+  /// is caught and this method returns `false`.
   ///
-  /// The [exitProcessIfTrue] parameter, which defaults to `false`, determines whether the app should terminate the process
-  /// if hooking is detected. If set to `true`, the app will attempt to terminate the process on the native side, potentially
-  /// using methods like `exitProcess(0)` depending on the implementation in Kotlin/Java.
+  /// The [exitProcessIfTrue] parameter (defaults to `false`) determines whether
+  /// the native side should immediately terminate the application process if
+  /// an active hook is verified.
   ///
-  /// The [uninstallIfTrue] parameter, which also defaults to `false`, determines whether the app should attempt to automatically
-  /// uninstall itself if hooking is detected. If set to `true`, the app will try to uninstall via root access. If root
-  /// uninstallation fails, a standard uninstall prompt will be shown to the user.
-  ///
-  /// Using [uninstallIfTrue] and [exitProcessIfTrue] simultaneously provides a more aggressive approach to mitigate potential
-  /// tampering or reverse-engineering attempts, ensuring stricter security.
-  ///
-  /// If both flags are set to `true`, the app will prioritize attempting uninstallation before terminating the process.
-  ///
-  /// If the check fails, the method returns `false`.
+  /// The [uninstallIfTrue] parameter (defaults to `false`) triggers a defensive
+  /// fallback response: requests an application wipe dialog on Android, or pushes the
+  /// client to the App Settings pane before executing a native kill switch on iOS.
   static Future<bool> check({
     bool exitProcessIfTrue = false,
     bool uninstallIfTrue = false,
   }) async {
     try {
-      return await _channel.invokeMethod('isHooked', {
-            'exitProcessIfTrue': exitProcessIfTrue,
-            'uninstallIfTrue': uninstallIfTrue,
-          }) ??
-          false;
+      if (Platform.isIOS || Platform.isAndroid) {
+        // Both platforms share 'isHooked' method call names natively
+        return await _channel.invokeMethod('isHooked', {
+              'exitProcessIfTrue': exitProcessIfTrue,
+              'uninstallIfTrue': uninstallIfTrue,
+            }) ??
+            false;
+      }
+      return false;
     } on PlatformException catch (e) {
-      print("Failed to check hooked: '${e.message}'.");
+      print("Failed to check hooking state: '${e.message}'.");
       return false;
     }
   }

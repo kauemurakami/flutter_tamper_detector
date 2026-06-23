@@ -12,7 +12,7 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
     let args = call.arguments as? [String: Any]
 
     switch call.method {
-   case "isSimulator": 
+    case "isSimulator": 
         let exitProcessIfTrue = args?["exitProcessIfTrue"] as? Bool ?? false
         let isSimulator = IsSimulator.check()
         
@@ -41,6 +41,26 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
             }
         }
         result(isJailbroken)
+
+    case "isHooked": 
+        let exitProcessIfTrue = args?["exitProcessIfTrue"] as? Bool ?? false
+        let uninstallIfTrue = args?["uninstallIfTrue"] as? Bool ?? false
+        
+        let isHookedEnvironment = IsHooked.check()
+        
+        if isHookedEnvironment {
+            if exitProcessIfTrue {
+                exit(0)
+            } else if uninstallIfTrue {
+                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:]) { _ in exit(0) }
+                } else {
+                    exit(0)
+                }
+            }
+        }
+        result(isHookedEnvironment)
+      
     default:
         result(FlutterMethodNotImplemented)
     }

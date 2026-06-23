@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     // await FlutterTamperDetector.appSecuritySettings();
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
-    // bool hooked = await FlutterTamperDetector.isHooked();
+    bool hooked = await FlutterTamperDetector.isHooked();
     // bool debug = await FlutterTamperDetector.isDebug();
     // bool installedFromPlayStore =
     //     await FlutterTamperDetector.isInstalledFromPlaystore();
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       isEmulator = emulator;
       isRooted = rooted;
-      // isHooked = hooked;
+      isHooked = hooked;
       // isDebug = debug;
       // isInstalledFromPlayStore = installedFromPlayStore;
     });
