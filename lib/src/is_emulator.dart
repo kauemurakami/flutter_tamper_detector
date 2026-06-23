@@ -1,46 +1,57 @@
+import 'dart:io';
 import 'package:flutter/services.dart';
 
-/// Utility class to detect if the app is running on an emulator.
+/// Verify if:
+/// - In **Android** -> Checks if running on an **emulator**.
+/// - In **iOS** -> Checks if running on a **simulator**.
 ///
-/// This class communicates with the native platform using `MethodChannel`
-/// to determine whether the current device is an emulator.
+/// **Note:** The only function visible and available to the user in the Dart
+/// layer is [isEmulator] (accessed via `IsEmulator.check()`), which unifies
+/// the platform-specific checks under the hood.
 ///
 /// Example usage:
 /// ```dart
-/// bool isEmulator = await IsEmulator.check();
-/// if (isEmulator) {
-///   print("Running on an emulator.");
+/// bool isCompromisedEnvironment = await IsEmulator.check();
+/// if (isCompromisedEnvironment) {
+///   print("Running on an emulator or simulator.");
 /// }
 /// ```
 class IsEmulator {
-  /// The method channel used for communicating with the native platform.
+  /// The method channel used for communicating with the native platforms.
   static const MethodChannel _channel = MethodChannel(
     'flutter_tamper_detector',
   );
 
-  /// Checks whether the app is running on an emulator.
+  /// Checks whether the application is executing inside a virtual environment.
   ///
-  /// Returns `true` if the device is an emulator, otherwise `false`.
+  /// Returns `true` if the device is identified as an emulator (Android) or
+  /// a simulator (iOS), otherwise returns `false`.
   ///
-  /// If an error occurs while checking, it catches the exception and returns `false`.
+  /// If an unhandled platform exception occurs during communication, the error
+  /// is caught and this method returns `false`.
   ///
-  /// The [exitProcessIfTrue] parameter, which defaults to `false`, determines whether the app should terminate the process
-  /// if an emulator is detected. If set to `true`, the app will attempt to terminate the process on the native side,
-  /// potentially using methods like `exitProcess(0)` depending on the implementation in Kotlin/Java.
+  /// The [exitProcessIfTrue] parameter (defaults to `false`) determines whether
+  /// the native side should immediately terminate the application process if a
+  /// virtual environment is detected.
   ///
-  /// [exitProcessIfTrue] allows the app to take strict security measures when an emulator is detected, helping protect
-  /// against reverse engineering or unauthorized testing of the app.
-  ///
-  /// If the [exitProcessIfTrue] flag is set to `true`, it will be passed to the native code to trigger an exit condition.
-  /// If the check fails, the method returns `false`.
+  /// Turning [exitProcessIfTrue] to `true` acts as an automated anti-tampering
+  /// response layer directly managed by Kotlin (Android) or Swift (iOS).
   static Future<bool> check({bool exitProcessIfTrue = false}) async {
     try {
-      return await _channel.invokeMethod('isEmulator', {
-            'exitProcessIfTrue': exitProcessIfTrue,
-          }) ??
-          false;
+      if (Platform.isIOS) {
+        return await _channel.invokeMethod('isSimulator', {
+              'exitProcessIfTrue': exitProcessIfTrue,
+            }) ??
+            false;
+      } else if (Platform.isAndroid) {
+        return await _channel.invokeMethod('isEmulator', {
+              'exitProcessIfTrue': exitProcessIfTrue,
+            }) ??
+            false;
+      }
+      return false;
     } on PlatformException catch (e) {
-      print("Failed to check emulator: '${e.message}'.");
+      print("Failed to check emulator/simulator: '${e.message}'.");
       return false;
     }
   }

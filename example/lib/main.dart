@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tamper_detector/flutter_tamper_detector.dart';
 
+bool windowSecurityOn = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  windowSecurityOn = await FlutterTamperDetector.appSecuritySettings(
+    hideInMenu: true,
+    preventScreenshot: true,
+  );
 
   runApp(MyApp());
 }
@@ -20,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   bool isRooted = false;
   bool isHooked = false;
   bool isDebug = false;
-  bool isInstalledFromPlayStore = false;
+  bool isInstalledFromStore = false;
 
   @override
   void initState() {
@@ -30,13 +35,12 @@ class _MyAppState extends State<MyApp> {
 
   // Function to check device status
   void _checkDeviceStatus() async {
-    await FlutterTamperDetector.appSecuritySettings();
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
     bool debug = await FlutterTamperDetector.isDebug();
-    bool installedFromPlayStore =
-        await FlutterTamperDetector.isInstalledFromPlaystore();
+    bool isInstalledFromStore =
+        await FlutterTamperDetector.isInstalledFromStore();
 
     /*If you want the package to automatically terminate the application process,
     test with our `exitProcessIfTrue:true` parameter.
@@ -48,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     or
     bool hooked = await FlutterTamperDetector.isHooked(uninstallIfTrue: true);
     bool debug = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
-    bool installedFromPlayStore = await FlutterTamperDetector.isInstalledFromPlaystore(exitProcessIfFalse: true);
+    bool isInstalledFromStore = await FlutterTamperDetector.isInstalledFromStore(exitProcessIfFalse: true);
     */
 
     setState(() {
@@ -56,7 +60,7 @@ class _MyAppState extends State<MyApp> {
       isRooted = rooted;
       isHooked = hooked;
       isDebug = debug;
-      isInstalledFromPlayStore = installedFromPlayStore;
+      isInstalledFromStore = isInstalledFromStore;
     });
   }
 
@@ -75,8 +79,9 @@ class _MyAppState extends State<MyApp> {
               Text('Is Hooked: $isHooked'),
               Text('Is Rooted: $isRooted'),
               Text('Is Emulator: $isEmulator'),
+              Text('Window secutity on: $windowSecurityOn'),
               Text(
-                'Is installed from the play store: $isInstalledFromPlayStore',
+                'Is installed from the official store: $isInstalledFromStore',
               ),
             ],
           ),

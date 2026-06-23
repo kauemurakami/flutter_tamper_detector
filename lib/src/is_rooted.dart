@@ -1,55 +1,65 @@
+import 'dart:io';
 import 'package:flutter/services.dart';
 
-/// Utility class to detect if the device is rooted.
+/// Verify if:
+/// - In **Android** -> Checks if the device has **root** access.
+/// - In **iOS** -> Checks if the device has a **jailbreak**.
 ///
-/// This class communicates with the native platform using `MethodChannel`
-/// to determine whether the current device has root access.
+/// **Note:** The only function visible and available to the user in the Dart
+/// layer is [isRooted] (accessed via `IsRooted.check()`), which unifies
+/// the platform-specific security checks under the hood.
 ///
 /// Example usage:
 /// ```dart
-/// bool isRooted = await IsRooted.check();
-/// if (isRooted) {
-///   print("Device is rooted.");
+/// bool isCompromised = await IsRooted.check();
+/// if (isCompromised) {
+///   print("Device is compromised (Rooted or Jailbroken).");
 /// }
 /// ```
 class IsRooted {
-  /// The method channel used for communicating with the native platform.
+  /// The method channel used for communicating with the native platforms.
   static const MethodChannel _channel = MethodChannel(
     'flutter_tamper_detector',
   );
 
-  /// Checks whether the app is being hooked by malicious tools.
+  /// Checks whether the application is executing on a modified operating system.
   ///
-  /// Returns `true` if hooking is detected, otherwise `false`.
+  /// Returns `true` if the device is identified as rooted (Android) or
+  /// jailbroken (iOS), otherwise returns `false`.
   ///
-  /// If an error occurs while checking, it catches the exception and returns `false`.
+  /// If an unhandled platform exception occurs during communication, the error
+  /// is caught and this method returns `false`.
   ///
-  /// The [exitProcessIfTrue] parameter, which defaults to `false`, determines whether the app should terminate the process
-  /// if hooking is detected. If set to `true`, the app will attempt to terminate the process on the native side, potentially
-  /// using methods like `exitProcess(0)` depending on the implementation in Kotlin/Java.
+  /// The [exitProcessIfTrue] parameter (defaults to `false`) determines whether
+  /// the native side should immediately terminate the application process if
+  /// a risk condition is verified.
   ///
-  /// The [uninstallIfTrue] parameter, which also defaults to `false`, determines whether the app should attempt to automatically
-  /// uninstall itself if hooking is detected. If set to `true`, the app will try to uninstall via root access. If root
-  /// uninstallation fails, a standard uninstall prompt will be shown to the user.
-  ///
-  /// Using [uninstallIfTrue] and [exitProcessIfTrue] simultaneously provides a more aggressive approach to mitigate potential
-  /// tampering or reverse-engineering attempts, ensuring stricter security.
-  ///
-  /// If both flags are set to `true`, the app will prioritize attempting uninstallation before terminating the process.
-  ///
-  /// If the check fails, the method returns `false`.
+  /// The [uninstallIfTrue] parameter (defaults to `false`) triggers a native
+  /// reaction: prompts an uninstallation request on Android, or redirects the
+  /// user to the App Settings menu before closing on iOS.
   static Future<bool> check({
     bool exitProcessIfTrue = false,
     bool uninstallIfTrue = false,
   }) async {
     try {
-      return await _channel.invokeMethod('isRooted', {
-            'exitProcessIfTrue': exitProcessIfTrue,
-            'uninstallIfTrue': uninstallIfTrue,
-          }) ??
-          false;
+      if (Platform.isIOS) {
+        // Routes to 'isJailbreak' on the Swift side
+        return await _channel.invokeMethod('isJailbreak', {
+              'exitProcessIfTrue': exitProcessIfTrue,
+              'uninstallIfTrue': uninstallIfTrue,
+            }) ??
+            false;
+      } else if (Platform.isAndroid) {
+        // Keeps legacy behavior routing to 'isRooted' on the Kotlin side
+        return await _channel.invokeMethod('isRooted', {
+              'exitProcessIfTrue': exitProcessIfTrue,
+              'uninstallIfTrue': uninstallIfTrue,
+            }) ??
+            false;
+      }
+      return false;
     } on PlatformException catch (e) {
-      print("Failed to check root status: '${e.message}'.");
+      print("Failed to check root/jailbreak: '${e.message}'.");
       return false;
     }
   }

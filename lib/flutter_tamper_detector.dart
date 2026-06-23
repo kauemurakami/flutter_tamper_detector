@@ -4,7 +4,7 @@ import './src/is_emulator.dart';
 import './src/is_rooted.dart';
 import './src/is_hooked.dart';
 import './src/is_debug.dart';
-import './src/is_installed_from_playstore.dart'; // Adicionei a importação do novo arquivo
+import 'src/is_installed_from_stores.dart'; // Adicionei a importação do novo arquivo
 
 /// A security utility for detecting potential tampering with the Flutter application.
 ///
@@ -39,14 +39,16 @@ class FlutterTamperDetector {
   /// If set to `false`, screenshots and screen recording will be allowed.
   ///
   static Future<bool> appSecuritySettings({
-    hideInMenu = true,
-    preventScreenshot = true,
+    bool hideInMenu = true,
+    bool preventScreenshot = true,
   }) async => await AppSettingsSecurity.appSecuritySettings(
     hideInMenu: hideInMenu,
     preventScreenshot: preventScreenshot,
   );
 
-  /// Checks if the app is running on an emulator.
+  /// Checks if the app is running on.
+  /// [android] -> emulator
+  /// [ios] -> simulator
   ///
   /// Returns `true` if the device is an emulator, otherwise `false`.
   /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if an emulator is detected.
@@ -88,7 +90,6 @@ class FlutterTamperDetector {
   ///
   /// Returns `true` if the app was installed from the Play Store, otherwise `false`.
   /// Optionally, if [exitProcessIfFalse] is set to `true`, the app will attempt to terminate the process if it was not installed from the Play Store.
-  static Future<bool> isInstalledFromPlaystore({
-    bool exitProcessIfFalse = false,
-  }) => IsInstalledFromPlaystore.check(exitProcessIfFalse: exitProcessIfFalse);
+  static Future<bool> isInstalledFromStore({bool exitProcessIfFalse = false}) =>
+      IsInstalledFromStores.check(exitProcessIfFalse: exitProcessIfFalse);
 }
