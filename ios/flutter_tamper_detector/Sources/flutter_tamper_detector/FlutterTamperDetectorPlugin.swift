@@ -60,7 +60,17 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
             }
         }
         result(isHookedEnvironment)
-      
+    
+    case "isDebug": // <-- Novo método escutando a checagem de Debugger/Tracing no iOS
+        let exitProcessIfTrue = args?["exitProcessIfTrue"] as? Bool ?? false
+        
+        let isDebuggerAttached = IsDebug.check()
+        
+        if isDebuggerAttached && exitProcessIfTrue {
+            exit(0)
+        }
+        
+        result(isDebuggerAttached)
     default:
         result(FlutterMethodNotImplemented)
     }
