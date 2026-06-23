@@ -61,7 +61,7 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
         }
         result(isHookedEnvironment)
     
-    case "isDebug": // <-- Novo método escutando a checagem de Debugger/Tracing no iOS
+    case "isDebug": 
         let exitProcessIfTrue = args?["exitProcessIfTrue"] as? Bool ?? false
         
         let isDebuggerAttached = IsDebug.check()
@@ -71,6 +71,19 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
         }
         
         result(isDebuggerAttached)
+
+    case "isInstalledFromAppStore": 
+        // Mantém a chave legada 'exitProcessIfTrue' enviada pelo Dart para não quebrar o mapeamento
+        let exitProcessIfFalse = args?["exitProcessIfTrue"] as? Bool ?? false
+        
+        let isOfficialStore = IsInstalledFromAppStore.check()
+        
+        // Se NÃO foi instalado pela loja oficial e a flag de fechamento for verdadeira
+        if !isOfficialStore && exitProcessIfFalse {
+            exit(0)
+        }
+        
+        result(isOfficialStore)
     default:
         result(FlutterMethodNotImplemented)
     }

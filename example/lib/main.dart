@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   bool isRooted = false;
   bool isHooked = false;
   bool isDebug = false;
-  bool isInstalledFromPlayStore = false;
+  bool isInstalledFromStore = false;
 
   @override
   void initState() {
@@ -35,8 +35,8 @@ class _MyAppState extends State<MyApp> {
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
     bool debug = await FlutterTamperDetector.isDebug();
-    // bool installedFromPlayStore =
-    //     await FlutterTamperDetector.isInstalledFromPlaystore();
+    bool isInstalledFromStore =
+        await FlutterTamperDetector.isInstalledFromStore();
 
     /*If you want the package to automatically terminate the application process,
     test with our `exitProcessIfTrue:true` parameter.
@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
     or
     bool hooked = await FlutterTamperDetector.isHooked(uninstallIfTrue: true);
     bool debug = await FlutterTamperDetector.isDebug(exitProcessIfTrue: true);
-    bool installedFromPlayStore = await FlutterTamperDetector.isInstalledFromPlaystore(exitProcessIfFalse: true);
+    bool isInstalledFromStore = await FlutterTamperDetector.isInstalledFromStore(exitProcessIfFalse: true);
     */
 
     setState(() {
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
       isRooted = rooted;
       isHooked = hooked;
       isDebug = debug;
-      // isInstalledFromPlayStore = installedFromPlayStore;
+      isInstalledFromStore = isInstalledFromStore;
     });
   }
 
@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
               Text('Is Rooted: $isRooted'),
               Text('Is Emulator: $isEmulator'),
               Text(
-                'Is installed from the play store: $isInstalledFromPlayStore',
+                'Is installed from the official store: $isInstalledFromStore',
               ),
             ],
           ),
