@@ -84,6 +84,19 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
         }
         
         result(isOfficialStore)
+
+    case "setAppPrivacy": 
+        let preventScreenshot = args?["preventScreenshot"] as? Bool ?? true
+        let hideInMenu = args?["hideInMenu"] as? Bool ?? true
+        
+        // Execute UI modifications on the main thread safely
+        DispatchQueue.main.async {
+            AppPrivacyWindow.shared.configure(
+                preventScreenshot: preventScreenshot,
+                hideInMenu: hideInMenu
+            )
+        }
+        result(true)
     default:
         result(FlutterMethodNotImplemented)
     }

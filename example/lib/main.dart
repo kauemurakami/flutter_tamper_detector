@@ -21,6 +21,7 @@ class _MyAppState extends State<MyApp> {
   bool isHooked = false;
   bool isDebug = false;
   bool isInstalledFromStore = false;
+  bool windowSecurityOn = false;
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _MyAppState extends State<MyApp> {
 
   // Function to check device status
   void _checkDeviceStatus() async {
-    // await FlutterTamperDetector.appSecuritySettings();
+    bool windowSecurity = await FlutterTamperDetector.appSecuritySettings();
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
@@ -57,6 +58,7 @@ class _MyAppState extends State<MyApp> {
       isHooked = hooked;
       isDebug = debug;
       isInstalledFromStore = isInstalledFromStore;
+      windowSecurityOn = windowSecurity;
     });
   }
 
@@ -75,6 +77,7 @@ class _MyAppState extends State<MyApp> {
               Text('Is Hooked: $isHooked'),
               Text('Is Rooted: $isRooted'),
               Text('Is Emulator: $isEmulator'),
+              Text('Window secutity on: $windowSecurityOn'),
               Text(
                 'Is installed from the official store: $isInstalledFromStore',
               ),
