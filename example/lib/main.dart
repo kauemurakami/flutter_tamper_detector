@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tamper_detector/flutter_tamper_detector.dart';
 
+bool windowSecurityOn = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  windowSecurityOn = await FlutterTamperDetector.appSecuritySettings(
+    hideInMenu: true,
+    preventScreenshot: true,
+  );
 
   runApp(MyApp());
 }
@@ -21,7 +26,6 @@ class _MyAppState extends State<MyApp> {
   bool isHooked = false;
   bool isDebug = false;
   bool isInstalledFromStore = false;
-  bool windowSecurityOn = false;
 
   @override
   void initState() {
@@ -31,7 +35,6 @@ class _MyAppState extends State<MyApp> {
 
   // Function to check device status
   void _checkDeviceStatus() async {
-    bool windowSecurity = await FlutterTamperDetector.appSecuritySettings();
     bool emulator = await FlutterTamperDetector.isEmulator();
     bool rooted = await FlutterTamperDetector.isRooted();
     bool hooked = await FlutterTamperDetector.isHooked();
@@ -58,7 +61,6 @@ class _MyAppState extends State<MyApp> {
       isHooked = hooked;
       isDebug = debug;
       isInstalledFromStore = isInstalledFromStore;
-      windowSecurityOn = windowSecurity;
     });
   }
 

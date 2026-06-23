@@ -7,7 +7,6 @@ class AppPrivacyWindow {
     
     private var blurView: UIVisualEffectView?
     private var secureTextField: UITextField?
-    private var containerView: UIView?
     private var isPreventScreenshotEnabled = false
     private var isHideInMenuEnabled = false
     private var isObserving = false
@@ -16,59 +15,47 @@ class AppPrivacyWindow {
         self.isPreventScreenshotEnabled = preventScreenshot
         self.isHideInMenuEnabled = hideInMenu
         
-        setupSecureTextFieldIfNeeded()
+        // Ejecuta na Main Thread de UI para garantir sincronia com a janela
+        DispatchQueue.main.async {
+            self.setupSecureScreenIfNeeded()
+        }
         
         if !isObserving {
             isObserving = true
-            // Listen for backgrounding/foregrounding events to handle app switcher masking
             NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-            
-            // Listen for screen recording changes
             NotificationCenter.default.addObserver(self, selector: #selector(screenCaptureChanged), name: UIScreen.capturedDidChangeNotification, object: nil)
         }
-        
-        // Immediate run check for screen recording upon configuration
-        screenCaptureChanged()
     }
     
-    private func setupSecureTextFieldIfNeeded() {
+    private func setupSecureScreenIfNeeded() {
         guard isPreventScreenshotEnabled else {
-            // If disabled, restore original structure if needed
-            if let flutterView = containerView?.subviews.first, let window = getKeyWindow() {
-                window.addSubview(flutterView)
-            }
-            containerView?.removeFromSuperview()
-            containerView = nil
+            secureTextField?.removeFromSuperview()
             secureTextField = nil
             return
         }
         
         if secureTextField == nil, let window = getKeyWindow() {
+            // Cria o UITextField mascarado
             let textField = UITextField()
             textField.isSecureTextEntry = true
-            secureTextField = textField
+            textField.isUserInteractionEnabled = false // Não bloqueia os cliques no Flutter abaixo dele
             
-            // Look for the inner UITextField secure container view inside its subviews hierarchy
-            // This grabs the hardware-protected layer container from iOS
-            if let secureContainer = textField.subviews.first(where: { String(describing: type(of: $0)).contains("Canvas") || $0.description.contains("Canvas") }) ?? textField.subviews.first {
-                self.containerView = secureContainer
-                
-                window.addSubview(secureContainer)
-                secureContainer.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    secureContainer.topAnchor.constraint(equalTo: window.topAnchor),
-                    secureContainer.bottomAnchor.constraint(equalTo: window.bottomAnchor),
-                    secureContainer.leadingAnchor.constraint(equalTo: window.leadingAnchor),
-                    secureContainer.trailingAnchor.constraint(equalTo: window.trailingAnchor)
-                ])
-                
-                // Safely embed Flutter's host view controller layer directly into the secure hardware pipeline
-                if let flutterView = window.rootViewController?.view {
-                    secureContainer.addSubview(flutterView)
-                    flutterView.frame = window.bounds
-                    flutterView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                }
+            secureTextField = textField
+            window.addSubview(textField)
+            
+            // Faz o campo seguro ocupar a tela inteira invisivelmente
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                textField.topAnchor.constraint(equalTo: window.topAnchor),
+                textField.bottomAnchor.constraint(equalTo: window.bottomAnchor),
+                textField.leadingAnchor.constraint(equalTo: window.leadingAnchor),
+                textField.trailingAnchor.constraint(equalTo: window.trailingAnchor)
+            ])
+            
+            // Vincula a camada de renderização do Flutter ao container seguro do texto
+            if let secureContainer = textField.layer.sublayers?.first {
+                window.layer.superlayer?.addSublayer(secureContainer)
             }
         }
     }
@@ -81,18 +68,15 @@ class AppPrivacyWindow {
 
     @objc private func willEnterForeground() {
         removeBlurScreen()
-        // Re-verify if a recording tool started while the app was suspended
-        screenCaptureChanged()
     }
 
     @objc private func screenCaptureChanged() {
         guard isPreventScreenshotEnabled else { return }
         
-        // UIScreen.main.isCaptured evaluates true if screen recording, AirPlay, or mirroring is running
+        // Checagem via API nativa
         if UIScreen.main.isCaptured {
             applyBlurScreen()
         } else {
-            // Do not remove blur if the app is currently sitting in the background
             if UIApplication.shared.applicationState != .background {
                 removeBlurScreen()
             }
@@ -107,7 +91,9 @@ class AppPrivacyWindow {
         visualBlurEffectView.frame = window.bounds
         visualBlurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
+        // Garante que o borrão fique no topo absoluto de tudo
         window.addSubview(visualBlurEffectView)
+        window.bringSubviewToFront(visualBlurEffectView)
         self.blurView = visualBlurEffectView
     }
 

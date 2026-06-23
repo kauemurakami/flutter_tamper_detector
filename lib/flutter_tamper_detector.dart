@@ -39,8 +39,8 @@ class FlutterTamperDetector {
   /// If set to `false`, screenshots and screen recording will be allowed.
   ///
   static Future<bool> appSecuritySettings({
-    hideInMenu = true,
-    preventScreenshot = true,
+    bool hideInMenu = true,
+    bool preventScreenshot = true,
   }) async => await AppSettingsSecurity.appSecuritySettings(
     hideInMenu: hideInMenu,
     preventScreenshot: preventScreenshot,
