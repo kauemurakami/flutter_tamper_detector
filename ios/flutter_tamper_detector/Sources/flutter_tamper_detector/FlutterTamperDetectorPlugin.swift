@@ -10,7 +10,7 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     let args = call.arguments as? [String: Any]
-    
+
     switch call.method {
    case "isSimulator": 
         let exitProcessIfTrue = args?["exitProcessIfTrue"] as? Bool ?? false
@@ -20,6 +20,27 @@ public class FlutterTamperDetectorPlugin: NSObject, FlutterPlugin {
             exit(0)
         }
         result(isSimulator)
+
+    case "isJailbreak": 
+        let exitProcessIfTrue = args?["exitProcessIfTrue"] as? Bool ?? false
+        let uninstallIfTrue = args?["uninstallIfTrue"] as? Bool ?? false
+        
+        let isJailbroken = IsJailbreak.check()
+        
+        if isJailbroken {
+            if exitProcessIfTrue {
+                exit(0)
+            } else if uninstallIfTrue {
+                if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:]) { _ in
+                        exit(0)
+                    }
+                } else {
+                    exit(0)
+                }
+            }
+        }
+        result(isJailbroken)
     default:
         result(FlutterMethodNotImplemented)
     }
