@@ -210,9 +210,9 @@ policy; individual screens own only their stream subscriptions.
 
 ## Detailed documentation
 
-- [Anti-REA roadmap and threat model](docs/ANTI_REA_PLAN.md)
-- [Play Integrity and App Attest integration guide](docs/ATTESTATION.md)
-- [Security test matrix](docs/TESTING.md)
+- [Anti-REA roadmap and threat model](doc/ANTI_REA_PLAN.md)
+- [Play Integrity and App Attest integration guide](doc/ATTESTATION.md)
+- [Security test matrix](doc/TESTING.md)
 - [Migration guide](MIGRATION.md)
 - [Security policy](SECURITY.md)
 
