@@ -1,23 +1,26 @@
 name: flutter_tamper_detector
-description: "flutter_tamper_detector is a Flutter security plugin that detects rooting, hooking tools like Frida and Xposed, or emulators, allowing you to block execution or exit the app."
-version: 0.6.1
+description: "Native Android and iOS runtime security signals for Flutter apps, including root, jailbreak, instrumentation, debugger, installer, and signing checks."
+version: 1.0.0
 homepage: https://github.com/kauemurakami/flutter_tamper_detector
 repository: https://github.com/kauemurakami/flutter_tamper_detector
 issue_tracker: https://github.com/kauemurakami/flutter_tamper_detector/issues
+topics:
+  - security
+  - mobile-security
+  - tamper-detection
 
 environment:
-  sdk: ^3.7.0
-  flutter: '>=3.3.0'
+  sdk: ^3.14.0
+  flutter: '>=3.50.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

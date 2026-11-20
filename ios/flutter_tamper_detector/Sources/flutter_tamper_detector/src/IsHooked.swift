@@ -1,37 +1,36 @@
 import Foundation
 import MachO
 
-class IsHooked {
-    static func check() -> Bool {
-        // Dynamic library injections are only relevant on real devices.
+/// Inspects dynamic images already loaded into the current process.
+enum IsHooked {
+    /// Indicates whether loaded-image inspection is supported on this target.
+    static var isSupported: Bool {
         #if targetEnvironment(simulator)
         return false
         #else
-        return checkInjectedDylibs()
+        return true
         #endif
     }
-    
-    // Low-level memory scan inspecting loaded dynamic link libraries (images) inside the process
-    private static func checkInjectedDylibs() -> Bool {
-        // Get the total number of currently loaded images in the memory space
-        let count = _dyld_image_count()
-        
-        for i in 0..<count {
-            // Safely retrieve the raw C-string pointer representation of the image name
-            if let cName = _dyld_get_image_name(i) {
-                let name = String(cString: cName)
-                
-                // Inspecting the absolute path paths for known hooking runtimes and tweaks
-                if name.contains("Library/MobileSubstrate") || 
-                   name.contains("FridaGadget") || 
-                   name.contains("libfrida") || 
-                   name.contains("SubstrateLoader") ||
-                   name.contains("substitute") ||
-                   name.contains("tweaks") {
-                    return true // Malicious or unauthorized library injection found in memory
-                }
-            }
+
+    private static let indicators = [
+        "fridagadget", "frida-agent", "libfrida", "substrate",
+        "mobilesubstrate", "substitute", "libhooker", "ellekit",
+        "xposed", "shadowhook", "cycript"
+    ]
+
+    /// Returns true when a loaded image path contains a known instrumentation marker.
+    /// This is heuristic and does not detect every possible inline or symbol hook.
+    static func check() -> Bool {
+        #if targetEnvironment(simulator)
+        return false
+        #else
+        let imageCount = _dyld_image_count()
+        for index in 0..<imageCount {
+            guard let imageName = _dyld_get_image_name(index) else { continue }
+            let path = String(cString: imageName).lowercased()
+            if indicators.contains(where: { path.contains($0) }) { return true }
         }
-        return false // Memory space clean
+        return false
+        #endif
     }
 }
