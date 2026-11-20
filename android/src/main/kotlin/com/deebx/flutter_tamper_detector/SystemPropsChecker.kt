@@ -1,25 +1,15 @@
 package com.deebx.flutter_tamper_detector
 
+/** Checks system-build and verified-boot properties independently of root access. */
 object SystemPropsChecker {
-    fun checkSystemProps(): Boolean {
-        val properties = arrayOf(
-            "ro.build.tags",        // "test-keys" root
-            "ro.debuggable",        // "1"  root
-            "ro.secure",            // "0"  root
-            "ro.bootmode",          // "recovery" or "fastboot" can indicate root
-            "ro.boot.verifiedbootstate" // "orange" or "yellow" indicate root
-        )
-
-        for (prop in properties) {
-            val value = ShellExecutor.getSystemProperty(prop)
-            if (value != null) {
-                if (prop == "ro.build.tags" && value.contains("test-keys")) return true
-                if (prop == "ro.debuggable" && value == "1") return true
-                if (prop == "ro.secure" && value == "0") return true
-                if (prop == "ro.bootmode" && (value == "recovery" || value == "fastboot")) return true
-                if (prop == "ro.boot.verifiedbootstate" && (value == "orange" || value == "yellow")) return true
-            }
-        }
-        return false
+    /** Returns true for test build tags, debuggable system images, or unlocked boot state. */
+    fun isModifiedSystem(): Boolean {
+        val tags = ShellExecutor.getSystemProperty("ro.build.tags").orEmpty()
+        val debuggable = ShellExecutor.getSystemProperty("ro.debuggable").orEmpty()
+        val secure = ShellExecutor.getSystemProperty("ro.secure").orEmpty()
+        val verifiedBoot = ShellExecutor.getSystemProperty("ro.boot.verifiedbootstate").orEmpty()
+        val flashLocked = ShellExecutor.getSystemProperty("ro.boot.flash.locked").orEmpty()
+        return tags.contains("test-keys", ignoreCase = true) || debuggable == "1" || secure == "0" ||
+            verifiedBoot.equals("orange", true) || verifiedBoot.equals("yellow", true) || flashLocked == "0"
     }
 }

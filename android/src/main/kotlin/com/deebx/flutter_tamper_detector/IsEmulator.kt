@@ -18,7 +18,6 @@ object IsEmulator {
             Build.PRODUCT.contains("sdk_x86"),
             Build.PRODUCT.contains("sdk_gphone"),
             Build.PRODUCT.contains("vbox86p"),
-            Build.BOARD.contains("unknown")
         )
         return buildProps.contains(true)
     }

@@ -2,26 +2,18 @@ package com.deebx.flutter_tamper_detector
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 
-/*
- * This demonstrates a simple unit test of the Kotlin portion of this plugin's implementation.
- *
- * Once you have built the plugin's example app, you can run these tests from the command
- * line by running `./gradlew testDebugUnitTest` in the `example/android/` directory, or
- * you can run them directly from IDEs that support JUnit such as Android Studio.
- */
-
+/** Verifies safe dispatch behavior that does not require a device or Android services. */
 internal class FlutterTamperDetectorPluginTest {
-  @Test
-  fun onMethodCall_getPlatformVersion_returnsExpectedValue() {
-    val plugin = FlutterTamperDetectorPlugin()
+    @Test
+    fun unknownMethodReturnsNotImplemented() {
+        val plugin = FlutterTamperDetectorPlugin()
+        val result = Mockito.mock(MethodChannel.Result::class.java)
 
-    val call = MethodCall("getPlatformVersion", null)
-    val mockResult: MethodChannel.Result = Mockito.mock(MethodChannel.Result::class.java)
-    plugin.onMethodCall(call, mockResult)
+        plugin.onMethodCall(MethodCall("unknown_method", null), result)
 
-    Mockito.verify(mockResult).success("Android " + android.os.Build.VERSION.RELEASE)
-  }
+        Mockito.verify(result).notImplemented()
+    }
 }

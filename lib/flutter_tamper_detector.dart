@@ -1,95 +1,15 @@
-import 'package:flutter_tamper_detector/src/app_privacy.dart';
-
-import './src/is_emulator.dart';
-import './src/is_rooted.dart';
-import './src/is_hooked.dart';
-import './src/is_debug.dart';
-import 'src/is_installed_from_stores.dart'; // Adicionei a importação do novo arquivo
-
-/// A security utility for detecting potential tampering with the Flutter application.
+/// Flutter Tamper Detector public API.
 ///
-/// `FlutterTamperDetector` provides methods to check if the device is:
-/// - **Rooted**: Detects if the device has root access.
-/// - **Hooked**: Identifies the presence of hooking frameworks like Frida, Xposed, or Cydia Substrate.
-/// - **Running on an Emulator**: Determines if the app is being executed in an emulated environment.
-/// - **Running in Debug mode**: Determines if the app is being executed in a debug mode.
-/// - **Installed from Play Store**: Verifies if the app was installed from the Play Store.
-/// - **Privacy Settings**: Allows setting privacy options for hiding the app in the menu and preventing screenshots.
-///
-/// This allows you to implement security measures, such as preventing execution on compromised devices.
-///
-/// Example:
-/// ```dart
-/// bool isRooted = await FlutterTamperDetector().isRooted();
-/// if (isRooted) {
-///   exit(0); // Terminate the app if the device is rooted.
-/// }
-/// ```
-class FlutterTamperDetector {
-  /// Configures the app's security settings.
-  ///
-  /// This method allows you to enable or disable security features for the app's window.
-  ///
-  /// [hideInMenu] (default: `true`):
-  /// If set to `true`, the app will be hidden from the recent apps menu by enabling the `FLAG_FULLSCREEN` flag.
-  /// If set to `false`, the app will appear in the recent apps menu.
-  ///
-  /// [preventScreenshot] (default: `true`):
-  /// If set to `true`, the app will prevent screenshots and screen recording by enabling the `FLAG_SECURE` flag.
-  /// If set to `false`, screenshots and screen recording will be allowed.
-  ///
-  static Future<bool> appSecuritySettings({
-    bool hideInMenu = true,
-    bool preventScreenshot = true,
-  }) async => await AppSettingsSecurity.appSecuritySettings(
-    hideInMenu: hideInMenu,
-    preventScreenshot: preventScreenshot,
-  );
+/// The package collects local security signals on Android and iOS. Signals are
+/// heuristics, not proof that a device or process is uncompromised. For
+/// sensitive server operations, combine local checks with server-validated
+/// platform attestation (Play Integrity or App Attest).
+library flutter_tamper_detector;
 
-  /// Checks if the app is running on.
-  /// [android] -> emulator
-  /// [ios] -> simulator
-  ///
-  /// Returns `true` if the device is an emulator, otherwise `false`.
-  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if an emulator is detected.
-  static Future<bool> isEmulator({bool exitProcessIfTrue = false}) =>
-      IsEmulator.check(exitProcessIfTrue: exitProcessIfTrue);
-
-  /// Checks if the device is rooted.
-  ///
-  /// Returns `true` if the device has root access, otherwise `false`.
-  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if the device is rooted.
-  static Future<bool> isRooted({
-    bool exitProcessIfTrue = false,
-    bool uninstallIfTrue = false,
-  }) => IsRooted.check(
-    exitProcessIfTrue: exitProcessIfTrue,
-    uninstallIfTrue: uninstallIfTrue,
-  );
-
-  /// Checks if the app is being hooked by a tool like Frida, Xposed, or Cydia Substrate.
-  ///
-  /// Returns `true` if any hooking framework is detected, otherwise `false`.
-  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if hooking is detected.
-  static Future<bool> isHooked({
-    bool exitProcessIfTrue = false,
-    bool uninstallIfTrue = false,
-  }) => IsHooked.check(
-    exitProcessIfTrue: exitProcessIfTrue,
-    uninstallIfTrue: uninstallIfTrue,
-  );
-
-  /// Checks if the app is running in debug mode.
-  ///
-  /// Returns `true` if the app is running in debug mode, otherwise `false`.
-  /// Optionally, if [exitProcessIfTrue] is set to `true`, the app will attempt to terminate the process if running in debug mode.
-  static Future<bool> isDebug({bool exitProcessIfTrue = false}) =>
-      IsDebug.check(exitProcessIfTrue: exitProcessIfTrue);
-
-  /// Checks if the app was installed from the Play Store.
-  ///
-  /// Returns `true` if the app was installed from the Play Store, otherwise `false`.
-  /// Optionally, if [exitProcessIfFalse] is set to `true`, the app will attempt to terminate the process if it was not installed from the Play Store.
-  static Future<bool> isInstalledFromStore({bool exitProcessIfFalse = false}) =>
-      IsInstalledFromStores.check(exitProcessIfFalse: exitProcessIfFalse);
-}
+export 'src/app_privacy.dart';
+export 'src/models/security_finding.dart';
+export 'src/models/security_options.dart';
+export 'src/models/security_report.dart';
+export 'src/models/security_status.dart';
+export 'src/security_logger.dart';
+export 'src/flutter_tamper_detector.dart';

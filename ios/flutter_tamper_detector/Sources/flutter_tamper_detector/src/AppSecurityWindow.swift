@@ -1,113 +1,70 @@
-// Sources/flutter_tamper_detector/src/AppPrivacyWindow.swift
 import Foundation
 import UIKit
 
-class AppPrivacyWindow {
+/// Obscures app content when the app backgrounds or screen capture is active.
+final class AppPrivacyWindow {
     static let shared = AppPrivacyWindow()
-    
+
     private var blurView: UIVisualEffectView?
-    private var secureTextField: UITextField?
-    private var isPreventScreenshotEnabled = false
-    private var isHideInMenuEnabled = false
-    private var isObserving = false
+    private var preventCapture = false
+    private var hideInSwitcher = true
+    private var observers: [NSObjectProtocol] = []
 
+    private init() {}
+
+    /// Applies privacy behavior and registers lifecycle/capture observers once.
     func configure(preventScreenshot: Bool, hideInMenu: Bool) {
-        self.isPreventScreenshotEnabled = preventScreenshot
-        self.isHideInMenuEnabled = hideInMenu
-        
-        // Ejecuta na Main Thread de UI para garantir sincronia com a janela
-        DispatchQueue.main.async {
-            self.setupSecureScreenIfNeeded()
+        preventCapture = preventScreenshot
+        hideInSwitcher = hideInMenu
+        if observers.isEmpty {
+            let center = NotificationCenter.default
+            observers.append(center.addObserver(
+                forName: UIApplication.willResignActiveNotification,
+                object: nil, queue: .main
+            ) { [weak self] _ in self?.applyIfNeeded() })
+            observers.append(center.addObserver(
+                forName: UIApplication.didBecomeActiveNotification,
+                object: nil, queue: .main
+            ) { [weak self] _ in self?.removeOverlay() })
+            observers.append(center.addObserver(
+                forName: UIScreen.capturedDidChangeNotification,
+                object: nil, queue: .main
+            ) { [weak self] _ in self?.captureStateChanged() })
         }
-        
-        if !isObserving {
-            isObserving = true
-            NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(screenCaptureChanged), name: UIScreen.capturedDidChangeNotification, object: nil)
-        }
-    }
-    
-    private func setupSecureScreenIfNeeded() {
-        guard isPreventScreenshotEnabled else {
-            secureTextField?.removeFromSuperview()
-            secureTextField = nil
-            return
-        }
-        
-        if secureTextField == nil, let window = getKeyWindow() {
-            // Cria o UITextField mascarado
-            let textField = UITextField()
-            textField.isSecureTextEntry = true
-            textField.isUserInteractionEnabled = false // Não bloqueia os cliques no Flutter abaixo dele
-            
-            secureTextField = textField
-            window.addSubview(textField)
-            
-            // Faz o campo seguro ocupar a tela inteira invisivelmente
-            textField.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                textField.topAnchor.constraint(equalTo: window.topAnchor),
-                textField.bottomAnchor.constraint(equalTo: window.bottomAnchor),
-                textField.leadingAnchor.constraint(equalTo: window.leadingAnchor),
-                textField.trailingAnchor.constraint(equalTo: window.trailingAnchor)
-            ])
-            
-            // Vincula a camada de renderização do Flutter ao container seguro do texto
-            if let secureContainer = textField.layer.sublayers?.first {
-                window.layer.superlayer?.addSublayer(secureContainer)
-            }
+        if preventCapture && (keyWindow()?.windowScene?.screen.isCaptured ?? false) {
+            applyIfNeeded()
+        } else if !hideInSwitcher && UIApplication.shared.applicationState == .active {
+            removeOverlay()
         }
     }
 
-    @objc private func didEnterBackground() {
-        if isHideInMenuEnabled {
-            applyBlurScreen()
-        }
+    private func captureStateChanged() {
+        guard preventCapture else { return }
+        if (keyWindow()?.windowScene?.screen.isCaptured ?? false) { applyIfNeeded() }
+        else if UIApplication.shared.applicationState == .active { removeOverlay() }
     }
 
-    @objc private func willEnterForeground() {
-        removeBlurScreen()
+    private func applyIfNeeded() {
+        guard hideInSwitcher || (preventCapture && (keyWindow()?.windowScene?.screen.isCaptured ?? false)) else { return }
+        guard let window = keyWindow(), blurView == nil else { return }
+        let overlay = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterialDark))
+        overlay.frame = window.bounds
+        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        overlay.accessibilityLabel = "Protected application content"
+        window.addSubview(overlay)
+        window.bringSubviewToFront(overlay)
+        blurView = overlay
     }
 
-    @objc private func screenCaptureChanged() {
-        guard isPreventScreenshotEnabled else { return }
-        
-        // Checagem via API nativa
-        if UIScreen.main.isCaptured {
-            applyBlurScreen()
-        } else {
-            if UIApplication.shared.applicationState != .background {
-                removeBlurScreen()
-            }
-        }
-    }
-
-    private func applyBlurScreen() {
-        guard blurView == nil, let window = getKeyWindow() else { return }
-        
-        let blurEffect = UIBlurEffect(style: .dark)
-        let visualBlurEffectView = UIVisualEffectView(effect: blurEffect)
-        visualBlurEffectView.frame = window.bounds
-        visualBlurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        // Garante que o borrão fique no topo absoluto de tudo
-        window.addSubview(visualBlurEffectView)
-        window.bringSubviewToFront(visualBlurEffectView)
-        self.blurView = visualBlurEffectView
-    }
-
-    private func removeBlurScreen() {
+    private func removeOverlay() {
         blurView?.removeFromSuperview()
         blurView = nil
     }
 
-    private func getKeyWindow() -> UIWindow? {
-        if #available(iOS 13.0, *) {
-            return UIApplication.shared.connectedScenes
-                .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
-                .first { $0.isKeyWindow }
-        }
-        return UIApplication.shared.keyWindow
+    private func keyWindow() -> UIWindow? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .first(where: \.isKeyWindow)
     }
 }

@@ -1,0 +1,19 @@
+# Keep the historical sample in the repository, but publish only /example.
+example_old/**
+
+# Version-control and local development artifacts.
+.git/**
+.dart_tool/**
+**/.dart_tool/**
+**/.idea/**
+**/.gradle/**
+**/build/**
+**/ephemeral/**
+**/local.properties
+**/*.iml
+**/*.class
+**/*.log
+**/*.pyc
+**/.DS_Store
+.flutter-plugins
+.flutter-plugins-dependencies

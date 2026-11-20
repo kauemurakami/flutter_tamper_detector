@@ -1,4 +1,4 @@
-package com.deebx.flutter_tamper_detector_example
+package com.example.example
 
 import io.flutter.embedding.android.FlutterActivity
 

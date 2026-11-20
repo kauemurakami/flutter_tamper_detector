@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 
 class IsJailbreak {
     static func check() -> Bool {
@@ -9,7 +10,7 @@ class IsJailbreak {
         return checkSuspiciousPaths() || checkSandboxViolation()
         #endif
     }
-    
+
     // 1. Low-level C check (POSIX stat) against jailbreak directories and managers.
     private static func checkSuspiciousPaths() -> Bool {
         let paths = [
@@ -22,7 +23,7 @@ class IsJailbreak {
             "/etc/apt",
             "/private/var/lib/apt/"
         ]
-        
+
         for path in paths {
             var s = stat()
             // stat() returns 0 if the file exists within the iPhone's file system
@@ -32,22 +33,18 @@ class IsJailbreak {
         }
         return false
     }
-    
+
     // 2. Dynamic test for iOS Sandbox violation
     private static func checkSandboxViolation() -> Bool {
         let testString = "Jailbreak_Tamper_Test"
-        let path = "/private/jailbreak_test.txt"
-        
+        let path = "/private/flutter_tamper_detector_\(getpid()).tmp"
+
         do {
-            // A regular app inside the sandbox will receive an 'Access Denied' error here.
-            // If the kernel has been modified by a jailbreak, writing will be allowed.
             try testString.write(toFile: path, atomically: true, encoding: .utf8)
-            
-            // If it successfully writes, remove the test file and confirm the violation
-            try FileManager.default.removeItem(atPath: path)
+            defer { try? FileManager.default.removeItem(atPath: path) }
             return true
         } catch {
-            // Normal and secure behavior: writing is blocked by the Sandbox
+            // Normal and secure behavior: writing is blocked by the sandbox.
             return false
         }
     }

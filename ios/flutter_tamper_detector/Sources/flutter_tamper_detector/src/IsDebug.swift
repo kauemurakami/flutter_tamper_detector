@@ -1,27 +1,28 @@
-// Sources/flutter_tamper_detector/src/IsDebug.swift
 import Foundation
+import Darwin
 
-class IsDebug {
-    static func check() -> Bool {
-        // If the application was compiled under the local Debug scheme (e.g., flutter run),
-        // always return true to facilitate local development and catch toolchains.
-        #if DEBUG
-        return true
+/// Detects a native debugger attached to the current iOS process.
+enum IsDebug {
+    /// Indicates whether runtime debugger inspection is supported on this target.
+    static var isSupported: Bool {
+        #if targetEnvironment(simulator)
+        return false
         #else
-        
-        // Low-level production kernel check to detect if a native debugger (like LLDB) is attached
-        var info = kinfo_proc()
+        return true
+        #endif
+    }
+
+    /// Returns true when the kernel marks the process as traced.
+    static func isDebuggerAttached() -> Bool {
+        #if targetEnvironment(simulator)
+        return false
+        #else
+        var processInfo = kinfo_proc()
         var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()]
         var size = MemoryLayout<kinfo_proc>.size
-        
-        let result = sysctl(&mib, u_int(mib.count), &info, &size, nil, 0)
-        
-        if result == 0 {
-            // Check if the P_TRACED flag is set in the process flags mask
-            return (info.kp_proc.p_flag & P_TRACED) != 0
-        }
-        
-        return false // Safe fallback if the system call fails
+        let result = sysctl(&mib, u_int(mib.count), &processInfo, &size, nil, 0)
+        guard result == 0 else { return false }
+        return (processInfo.kp_proc.p_flag & P_TRACED) != 0
         #endif
     }
 }
