@@ -1,3 +1,7 @@
+## 0.6.1
+* Migrated Android build configuration to support AGP 9.0+ built-in Kotlin
+* A temporary fix to ensure continuity for current users of the package, as I intend to refactor all the functions and release a completely different major version (1.0), with latest flutter version.
+
 ## 0.6.0
 * build from iOS
 
